@@ -1,1 +1,1 @@
-#from .click_auto_help import click_auto_help
+from .click_auto_help import DYMGroup
