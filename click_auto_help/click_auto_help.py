@@ -5,16 +5,14 @@
 
 """
 Extension for ``click`` to provide a group
-which automatically prints --help when a
-invaild command is used.
+which automatically prints i list of valid
+commands when a invaild command is used.
 Based off click-didyoumean.
 """
 
-#import difflib
 import typing
 
 import click
-from asserttool import ic
 
 
 class AHMixin:
@@ -42,9 +40,7 @@ class AHMixin:
         try:
             return super(AHMixin, self).resolve_command(ctx, args)  # type: ignore
         except click.exceptions.UsageError as error:
-            ic(error)
             error_msg = str(error)
-            original_cmd_name = click.utils.make_str(args[0])
             matches = self.list_commands(ctx) # type: ignore
             if matches:
                 fmt_matches = "\n    ".join(matches)
