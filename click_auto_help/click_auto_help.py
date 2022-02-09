@@ -17,7 +17,7 @@ import click
 from asserttool import ic
 
 
-class DYMMixin:
+class AHMixin:
     """
     Mixin class for click MultiCommand inherited classes
     to provide a list of valid commands when
@@ -40,7 +40,7 @@ class DYMMixin:
         raised exception message.
         """
         try:
-            return super(DYMMixin, self).resolve_command(ctx, args)  # type: ignore
+            return super(AHMixin, self).resolve_command(ctx, args)  # type: ignore
         except click.exceptions.UsageError as error:
             ic(error)
             error_msg = str(error)
@@ -54,7 +54,7 @@ class DYMMixin:
             raise click.exceptions.UsageError(error_msg, error.ctx)
 
 
-class DYMGroup(DYMMixin, click.Group):
+class AHGroup(AHMixin, click.Group):
     """
     click Group to provide a list of
     valid commands when a command is not
@@ -62,7 +62,7 @@ class DYMGroup(DYMMixin, click.Group):
     """
 
 
-class DYMCommandCollection(DYMMixin, click.CommandCollection):
+class AHCommandCollection(AHMixin, click.CommandCollection):
     """
     click CommandCollection to provide a list
     of valid commands when a command is not
