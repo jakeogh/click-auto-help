@@ -25,8 +25,6 @@ class DYMMixin:
     """
 
     def __init__(self, *args: typing.Any, **kwargs: typing.Any) -> None:
-        self.max_suggestions = kwargs.pop("max_suggestions", 3)
-        self.cutoff = kwargs.pop("cutoff", 0.5)
         super().__init__(*args, **kwargs)  # type: ignore
 
     def resolve_command(self,
@@ -51,7 +49,7 @@ class DYMMixin:
             if matches:
                 fmt_matches = "\n    ".join(matches)
                 error_msg += "\n\n"
-                error_msg += f"Did ya mean one of these?\n    {fmt_matches}"
+                error_msg += f"defined commands:\n    {fmt_matches}"
 
             raise click.exceptions.UsageError(error_msg, error.ctx)
 
