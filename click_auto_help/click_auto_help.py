@@ -20,7 +20,7 @@ from asserttool import ic
 class DYMMixin:
     """
     Mixin class for click MultiCommand inherited classes
-    to provide full --help functionality when
+    to provide a list of valid commands when
     a certain command is not registered.
     """
 
@@ -36,8 +36,8 @@ class DYMMixin:
                                           ]:
         """
         Overrides clicks ``resolve_command`` method
-        and appends *Did you mean ...* suggestions
-        to the raised exception message.
+        and appends list of valid commands to the
+        raised exception message.
         """
         try:
             return super(DYMMixin, self).resolve_command(ctx, args)  # type: ignore
@@ -49,22 +49,22 @@ class DYMMixin:
             if matches:
                 fmt_matches = "\n    ".join(matches)
                 error_msg += "\n\n"
-                error_msg += f"defined commands:\n    {fmt_matches}"
+                error_msg += f"Defined commands:\n    {fmt_matches}"
 
             raise click.exceptions.UsageError(error_msg, error.ctx)
 
 
 class DYMGroup(DYMMixin, click.Group):
     """
-    click Group to provide full --help
-    functionality when a command is not
+    click Group to provide a list of
+    valid commands when a command is not
     found in the group.
     """
 
 
 class DYMCommandCollection(DYMMixin, click.CommandCollection):
     """
-    click CommandCollection to provide full
-    --help functionality when a command is
-    not found in the group.
+    click CommandCollection to provide a list
+    of valid commands when a command is not
+    found in the group.
     """
