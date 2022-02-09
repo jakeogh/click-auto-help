@@ -10,7 +10,7 @@ invaild command is used.
 Based off click-didyoumean.
 """
 
-import difflib
+#import difflib
 import typing
 
 import click
@@ -19,7 +19,7 @@ import click
 class DYMMixin:
     """
     Mixin class for click MultiCommand inherited classes
-    to provide git-like *did-you-mean* functionality when
+    to provide full --help functionality when
     a certain command is not registered.
     """
 
@@ -43,12 +43,7 @@ class DYMMixin:
         except click.exceptions.UsageError as error:
             error_msg = str(error)
             original_cmd_name = click.utils.make_str(args[0])
-            matches = difflib.get_close_matches(
-                original_cmd_name,
-                self.list_commands(ctx),  # type: ignore
-                self.max_suggestions,
-                self.cutoff,
-            )
+            matches = self.list_commands(ctx) # type: ignore
             if matches:
                 fmt_matches = "\n    ".join(matches)
                 error_msg += "\n\n"
@@ -59,15 +54,15 @@ class DYMMixin:
 
 class DYMGroup(DYMMixin, click.Group):
     """
-    click Group to provide git-like
-    *did-you-mean* functionality when a certain
-    command is not found in the group.
+    click Group to provide full --help
+    functionality when a command is not
+    found in the group.
     """
 
 
 class DYMCommandCollection(DYMMixin, click.CommandCollection):
     """
-    click CommandCollection to provide git-like
-    *did-you-mean* functionality when a certain
-    command is not found in the group.
+    click CommandCollection to provide full
+    --help functionality when a command is
+    not found in the group.
     """
