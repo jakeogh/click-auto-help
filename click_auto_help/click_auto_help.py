@@ -14,6 +14,7 @@ Based off click-didyoumean.
 import typing
 
 import click
+from asserttool import ic
 
 
 class DYMMixin:
@@ -28,11 +29,13 @@ class DYMMixin:
         self.cutoff = kwargs.pop("cutoff", 0.5)
         super().__init__(*args, **kwargs)  # type: ignore
 
-    def resolve_command(
-        self, ctx: click.Context, args: typing.List[str]
-    ) -> typing.Tuple[
-        typing.Optional[str], typing.Optional[click.Command], typing.List[str]
-    ]:
+    def resolve_command(self,
+                        ctx: click.Context,
+                        args: typing.List[str],
+                        ) -> typing.Tuple[typing.Optional[str],
+                                          typing.Optional[click.Command],
+                                          typing.List[str],
+                                          ]:
         """
         Overrides clicks ``resolve_command`` method
         and appends *Did you mean ...* suggestions
@@ -41,6 +44,7 @@ class DYMMixin:
         try:
             return super(DYMMixin, self).resolve_command(ctx, args)  # type: ignore
         except click.exceptions.UsageError as error:
+            ic(error)
             error_msg = str(error)
             original_cmd_name = click.utils.make_str(args[0])
             matches = self.list_commands(ctx) # type: ignore
