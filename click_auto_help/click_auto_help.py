@@ -8,6 +8,7 @@ Extension for ``click`` to provide a group
 which automatically prints i list of valid
 commands when a invaild command is used.
 Based off click-didyoumean.
+https://github.com/click-contrib/click-didyoumean
 """
 from __future__ import annotations
 
