@@ -9,6 +9,7 @@ which automatically prints i list of valid
 commands when a invaild command is used.
 Based off click-didyoumean.
 """
+from __future__ import annotations
 
 import typing
 
@@ -25,23 +26,25 @@ class AHMixin:
     def __init__(self, *args: typing.Any, **kwargs: typing.Any) -> None:
         super().__init__(*args, **kwargs)  # type: ignore
 
-    def resolve_command(self,
-                        ctx: click.Context,
-                        args: typing.List[str],
-                        ) -> typing.Tuple[typing.Optional[str],
-                                          typing.Optional[click.Command],
-                                          typing.List[str],
-                                          ]:
+    def resolve_command(
+        self,
+        ctx: click.Context,
+        args: list[str],
+    ) -> tuple[None | str, None | click.Command, list[str],]:
         """
         Overrides clicks ``resolve_command`` method
         and appends list of valid commands to the
         raised exception message.
         """
         try:
+            # pylint: disable=no-member
             return super(AHMixin, self).resolve_command(ctx, args)  # type: ignore
+            # pylint: enable=no-member
         except click.exceptions.UsageError as error:
             error_msg = str(error)
-            matches = self.list_commands(ctx) # type: ignore
+            # pylint: disable=no-member
+            matches = self.list_commands(ctx)  # type: ignore
+            # pylint: enable=no-member
             if matches:
                 fmt_matches = "\n    ".join(matches)
                 error_msg += "\n\n"
