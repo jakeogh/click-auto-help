@@ -31,7 +31,11 @@ class AHMixin:
         self,
         ctx: click.Context,
         args: list[str],
-    ) -> tuple[None | str, None | click.Command, list[str],]:
+    ) -> tuple[
+        None | str,
+        None | click.Command,
+        list[str],
+    ]:
         """
         Overrides clicks ``resolve_command`` method
         and appends list of valid commands to the
