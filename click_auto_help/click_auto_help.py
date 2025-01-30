@@ -5,7 +5,7 @@
 
 """
 Extension for ``click`` to provide a group
-which automatically prints i list of valid
+which automatically prints a list of valid
 commands when a invaild command is used.
 Based off click-didyoumean.
 https://github.com/click-contrib/click-didyoumean
@@ -26,6 +26,7 @@ class AHMixin:
     """
 
     def __init__(self, *args: typing.Any, **kwargs: typing.Any) -> None:
+        eprint(args, kwargs)
         super().__init__(*args, **kwargs)  # type: ignore
 
     def resolve_command(
