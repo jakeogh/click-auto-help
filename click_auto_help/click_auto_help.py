@@ -15,6 +15,7 @@ from __future__ import annotations
 import typing
 
 import click
+from asserttool import icp
 
 
 class AHMixin:
@@ -41,6 +42,7 @@ class AHMixin:
         and appends list of valid commands to the
         raised exception message.
         """
+        icp(ctx)
         try:
             # pylint: disable=no-member
             return super(AHMixin, self).resolve_command(ctx, args)  # type: ignore
