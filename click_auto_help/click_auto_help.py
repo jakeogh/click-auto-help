@@ -24,7 +24,11 @@ class AHMixin:
     a certain command is not registered.
     """
 
-    def __init__(self, *args: typing.Any, **kwargs: typing.Any) -> None:
+    def __init__(
+        self,
+        *args: typing.Any,
+        **kwargs: typing.Any,
+    ) -> None:
         super().__init__(*args, **kwargs)  # type: ignore
 
     def resolve_command(
