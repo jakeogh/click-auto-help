@@ -6,8 +6,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "click_auto_help"
-version = "0.1"
-description = "print full --help when a incorrect command is used"
+version = "0.0.1760867053"
+description = "Click mixin to print full --help when a incorrect command is used"
 authors = [
     { name = "Justin Keogh", email = "github.com@v6y.net" },
 ]
