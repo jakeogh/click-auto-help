@@ -4,8 +4,8 @@ build-backend = "pep508_url_version_backend"
 backend-path = ["."]
 
 [project]
-name = "click_auto_help"
-version = "0.0.1761039177"
+name = "click-auto-help"
+version = "0.0.1761041641"
 description = "Click mixin to print full --help when a incorrect command is used"
 authors = [
     { name = "Justin Keogh", email = "github.com@v6y.net" },
