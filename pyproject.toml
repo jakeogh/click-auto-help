@@ -5,13 +5,12 @@ backend-path = ["."]
 
 [project]
 name = "click_auto_help"
-version = "0.0.1761031790"
+version = "0.0.1761034443"
 description = "Click mixin to print full --help when a incorrect command is used"
 authors = [
     { name = "Justin Keogh", email = "github.com@v6y.net" },
 ]
-dependencies = [
-]
+dependencies = []
 license = "ISC"
 requires-python = ">=3.11"
 
