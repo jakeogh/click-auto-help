@@ -1,17 +1,18 @@
 [build-system]
-requires = ["setuptools>=61.0", "tomlkit"]
-build-backend = "pep508_url_version_backend"
-backend-path = ["."]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "click-auto-help"
-version = "1!0.0.1784680961"
+version = "1!0.0.1787109847"
 description = "Click mixin to print full --help when a incorrect command is used"
 authors = [
     { name = "Justin Keogh", email = "github.com@v6y.net" },
 ]
 
-dependencies = []
+dependencies = [
+    "click",
+]
 license = "ISC"
 requires-python = ">=3.11"
 
@@ -27,7 +28,3 @@ click_auto_help = [
     "py.typed",
 ]
 
-[tool.pep508-url-version-backend]
-dependencies-indexed = ["click"]
-dependencies-git = ["click"]
-index-urls = ["jakeogh.github.io", "pip-index"]
