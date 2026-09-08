@@ -30,7 +30,29 @@ class HelpFirstMixin:
         if "--help" in own:
             click.echo(ctx.get_help(), color=ctx.color)
             ctx.exit()
-        return super().parse_args(ctx, args)  # type: ignore[misc]
+        try:
+            return super().parse_args(ctx, args)  # type: ignore[misc]
+        except click.exceptions.BadOptionUsage as error:
+            # an option given without its argument is told what the argument
+            # is: the choices when it has them, else the type
+            if error.option_name and "requires an argument" in str(error):
+                raise click.exceptions.BadOptionUsage(
+                    error.option_name, needs_what(self, ctx, error.option_name), error.ctx
+                ) from None
+            raise
+
+
+def needs_what(command: click.Command, ctx: click.Context, option_name: str) -> str:
+    """`Option '--view' requires an argument: one of samples, pixels.`, or
+    the type's name when the option takes anything of a kind."""
+    for param in command.params:
+        if option_name in getattr(param, "opts", ()) or option_name in getattr(param, "secondary_opts", ()):
+            kind = param.type
+            if isinstance(kind, click.Choice):
+                return f"Option {option_name!r} requires an argument: one of {', '.join(kind.choices)}."
+            metavar = param.metavar or kind.get_metavar(param, ctx) or kind.name.upper()
+            return f"Option {option_name!r} requires an argument: {metavar}."
+    return f"Option {option_name!r} requires an argument."
 
 
 class AHMixin(HelpFirstMixin):
