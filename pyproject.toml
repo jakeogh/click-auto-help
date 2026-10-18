@@ -4,14 +4,14 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "click-auto-help"
-version = "1!0.0.1788850543"
+version = "1!0.0.1792350353"
 description = "Click mixin to print full --help when a incorrect command is used"
 authors = [
     { name = "Justin Keogh", email = "github.com@v6y.net" },
 ]
 
 dependencies = [
-    "click",
+    "click>=8.2",
 ]
 license = "ISC"
 requires-python = ">=3.11"

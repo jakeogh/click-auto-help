@@ -56,6 +56,22 @@ def needs_what(command: click.Command, ctx: click.Context, option_name: str) -> 
 
 
 class AHMixin(HelpFirstMixin):
+    def parse_args(self, ctx: click.Context, args: list[str]) -> list[str]:
+        """Options alone are no command either, as when an alias or wrapper
+        adds options to every call: a group that shows its help for no
+        arguments shows it for those too, instead of failing with "Missing
+        command.". click 8.2 keeps the subcommand it parsed, if any, in
+        ctx._protected_args."""
+        rest = super().parse_args(ctx, args)
+        if (
+            not ctx._protected_args
+            and self.no_args_is_help  # type: ignore[attr-defined]
+            and not self.invoke_without_command  # type: ignore[attr-defined]
+            and not ctx.resilient_parsing
+        ):
+            raise click.exceptions.NoArgsIsHelpError(ctx)
+        return rest
+
     # appends the list of valid commands to the UsageError raised for an
     # unknown command; based on click-didyoumean
     def resolve_command(
@@ -75,8 +91,9 @@ class AHMixin(HelpFirstMixin):
 
 
 class AHGroup(AHMixin, click.Group):
-    """A group whose --help comes first, and whose unknown subcommand names
-    the ones there are. Its subcommands are made HelpFirst too."""
+    """A group whose --help comes first, whose help shows for options given
+    without a subcommand as for no arguments, and whose unknown subcommand
+    names the ones there are. Its subcommands are made HelpFirst too."""
 
     def command(self, *args, **kwargs):
         kwargs.setdefault("cls", AHCommand)
