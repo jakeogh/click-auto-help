@@ -1,6 +1,30 @@
 #!/usr/bin/env python3
 
+from typing import IO
+from typing import Any
+
 import click
+
+
+class HelpfulUsageError(click.UsageError):
+    """A usage error shown under the whole help of the command it is about:
+    its arguments, options and subcommands on the screen beside what went
+    wrong, rather than a usage line and a pointer to --help."""
+
+    def show(self, file: IO[Any] | None = None) -> None:
+        color = self.ctx.color if self.ctx is not None else None
+        if self.ctx is not None:
+            click.echo(self.ctx.get_help(), file=file, err=True, color=color)
+            click.echo(file=file, err=True)
+        click.echo(f"Error: {self.format_message()}", file=file, err=True, color=color)
+
+
+def helpful(error: click.UsageError, ctx: click.Context) -> click.UsageError:
+    """`error` as a HelpfulUsageError of the command it is about; one that
+    shows the help already is left as it is."""
+    if isinstance(error, (HelpfulUsageError, click.exceptions.NoArgsIsHelpError)):
+        return error
+    return HelpfulUsageError(error.format_message(), error.ctx or ctx)
 
 
 class HelpFirstMixin:
@@ -10,7 +34,9 @@ class HelpFirstMixin:
     rather than the help asked for. Here the help is shown and the command
     exits before anything is parsed. Only this command's arguments count:
     a `--help` after a subcommand's name is that subcommand's, and it does
-    the same for itself."""
+    the same for itself. Any usage error, an argument missing, an option
+    unknown, a subcommand unknown, or one the command raises itself, is
+    shown under the whole help of the command it is about."""
 
     def parse_args(self, ctx: click.Context, args: list[str]) -> list[str]:
         own = args
@@ -36,10 +62,16 @@ class HelpFirstMixin:
             # an option given without its argument is told what the argument
             # is: the choices when it has them, else the type
             if error.option_name and "requires an argument" in str(error):
-                raise click.exceptions.BadOptionUsage(
-                    error.option_name, needs_what(self, ctx, error.option_name), error.ctx
-                ) from None
-            raise
+                raise HelpfulUsageError(needs_what(self, ctx, error.option_name), error.ctx or ctx) from None
+            raise helpful(error, ctx) from None
+        except click.UsageError as error:
+            raise helpful(error, ctx) from None
+
+    def invoke(self, ctx: click.Context):
+        try:
+            return super().invoke(ctx)  # type: ignore[misc]
+        except click.UsageError as error:
+            raise helpful(error, ctx) from None
 
 
 def needs_what(command: click.Command, ctx: click.Context, option_name: str) -> str:
@@ -72,28 +104,12 @@ class AHMixin(HelpFirstMixin):
             raise click.exceptions.NoArgsIsHelpError(ctx)
         return rest
 
-    # appends the list of valid commands to the UsageError raised for an
-    # unknown command; based on click-didyoumean
-    def resolve_command(
-        self,
-        ctx: click.Context,
-        args: list[str],
-    ) -> tuple[None | str, None | click.Command, list[str]]:
-        try:
-            return super().resolve_command(ctx, args)  # type: ignore[misc]
-        except click.exceptions.UsageError as error:
-            error_msg = str(error)
-            matches = self.list_commands(ctx)  # type: ignore[attr-defined]
-            if matches:
-                fmt_matches = "\n    ".join(matches)
-                error_msg += f"\n\nDefined commands:\n    {fmt_matches}"
-            raise click.exceptions.UsageError(error_msg, error.ctx)
-
 
 class AHGroup(AHMixin, click.Group):
     """A group whose --help comes first, whose help shows for options given
-    without a subcommand as for no arguments, and whose unknown subcommand
-    names the ones there are. Its subcommands are made HelpFirst too."""
+    without a subcommand as for no arguments, and whose usage errors, an
+    unknown subcommand among them, show its whole help, its subcommands
+    listed. Its subcommands are made HelpFirst too."""
 
     def command(self, *args, **kwargs):
         kwargs.setdefault("cls", AHCommand)
